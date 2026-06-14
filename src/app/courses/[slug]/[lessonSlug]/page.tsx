@@ -1,5 +1,6 @@
 import { courses } from "@/data/courses";
 import Link from "next/link";
+import CompleteLessonButton from "@/components/CompleteLessonButton";
 export default async function LessonPage({
   params,
 }: {
@@ -62,6 +63,15 @@ const nextLesson =
 <p className="leading-8 whitespace-pre-line">
   {lesson.content}
 </p>
+<CompleteLessonButton
+  lessonId={`${slug}/${lessonSlug}`}
+  nextLessonUrl={
+    nextLesson
+      ? `/courses/${slug}/${nextLesson.slug}`
+      : null
+  }
+/>
+
 <div className="flex justify-between mt-10">
   {previousLesson ? (
     <Link

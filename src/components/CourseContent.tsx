@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Lesson = {
@@ -18,15 +18,30 @@ export default function CourseContent({
   lessons: Lesson[];
   courseSlug: string;
 }) {
-  const [lessonData, setLessonData] = useState(lessons);
+  const [completedLessonIds, setCompletedLessonIds] =
+    useState<string[]>([]);
 
-  const completedLessons = lessonData.filter(
-    (lesson) => lesson.completed
-  ).length;
+  useEffect(() => {
+    const storedLessons = JSON.parse(
+      localStorage.getItem("completedLessons") ||
+        "[]"
+    );
 
-  const progress = Math.round(
-    (completedLessons / lessonData.length) * 100
-  );
+    setCompletedLessonIds(storedLessons);
+  }, []);
+
+
+
+  const completedLessons = lessons.filter(
+  (lesson) =>
+    completedLessonIds.includes(
+      `${courseSlug}/${lesson.slug}`
+    )
+).length;
+
+const progress = Math.round(
+  (completedLessons / lessons.length) * 100
+);
 
   return (
     <div>
@@ -48,7 +63,7 @@ export default function CourseContent({
       )}
 
       <div className="space-y-3 mt-6">
-        {lessonData.map((lesson, index) => (
+        {lessons.map((lesson, index) => (
           <div
             key={lesson.title}
             className="border p-4 rounded-lg"
@@ -62,38 +77,23 @@ export default function CourseContent({
             <p>Duration: {lesson.duration}</p>
 
             <p
-              className={
-                lesson.completed
-                  ? "text-green-600"
-                  : "text-orange-500"
-              }
-            >
-              Status:{" "}
-              {lesson.completed
-                ? "✅ Completed"
-                : "⏳ Pending"}
-            </p>
+  className={
+    completedLessonIds.includes(
+      `${courseSlug}/${lesson.slug}`
+    )
+      ? "text-green-600"
+      : "text-orange-500"
+  }
+>
+  Status:{" "}
+  {completedLessonIds.includes(
+    `${courseSlug}/${lesson.slug}`
+  )
+    ? "✅ Completed"
+    : "⏳ Pending"}
+</p>
 
-            <button
-              onClick={() => {
-  const updatedLessons = lessonData.map(
-    (item, i) =>
-      i === index
-        ? {
-            ...item,
-            completed: !item.completed,
-          }
-        : item
-  );
-
-  setLessonData(updatedLessons);
-}}
-              className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
-            >
-              {lesson.completed
-  ? "Mark Pending"
-  : "Mark Complete"}
-            </button>
+           
           </div>
         ))}
       </div>

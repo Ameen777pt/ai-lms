@@ -15,6 +15,15 @@ const handleLogin = (e: React.FormEvent) => {
   email === "admin@example.com" &&
   password === "123456"
 ) {
+  localStorage.setItem(
+    "isLoggedIn",
+    "true"
+  );
+  localStorage.setItem(
+  "userEmail",
+  email
+);
+
   router.push("/dashboard");
 } else {
   alert("Invalid credentials");

@@ -31,7 +31,9 @@ export default async function CoursePage({
       <p>
         Instructor: {course.instructor}
       </p>
-      
+      <h2 className="text-2xl font-bold mt-8 mb-4">
+  Lessons
+</h2>
 
 
       <p>{course.description}</p>
@@ -39,9 +41,7 @@ export default async function CoursePage({
   lessons={course.lessons}
   courseSlug={course.slug}
 />
-      <h2 className="text-2xl font-bold mt-8 mb-4">
-  Lessons
-</h2>
+      
 
 
     </div>
