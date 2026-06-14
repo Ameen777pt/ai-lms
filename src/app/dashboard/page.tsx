@@ -105,6 +105,12 @@ const nextLesson =
 <p className="mt-4 text-xl">
   Welcome {userEmail}
 </p>
+<Link
+  href="/profile"
+  className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+>
+  View Profile
+</Link>
 <p className="mt-2">
   Enrolled Courses: {
     enrolledCourses.length
