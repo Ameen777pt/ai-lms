@@ -10,6 +10,8 @@ export default function DashboardPage() {
   useState("");
   const [completedLessonIds, setCompletedLessonIds] =
   useState<string[]>([]);
+  const [enrolledCourses, setEnrolledCourses] =
+  useState<string[]>([]);
   const handleLogout = () => {
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("userEmail");
@@ -17,6 +19,7 @@ export default function DashboardPage() {
   router.push("/login");
 };
   useEffect(() => {
+    
   const email =
     localStorage.getItem("userEmail");
 
@@ -30,7 +33,12 @@ export default function DashboardPage() {
   );
 
   setCompletedLessonIds(storedLessons);
-  console.log(storedLessons);
+const storedCourses = JSON.parse(
+  localStorage.getItem("enrolledCourses") ||
+    "[]"
+);
+
+setEnrolledCourses(storedCourses);
 
   const isLoggedIn =
     localStorage.getItem("isLoggedIn");
@@ -52,15 +60,19 @@ const pendingLessons =
 const progressPercentage = Math.round(
   (completedLessons / totalLessons) * 100
 );
-const continueCourse = courses.find(
-  (course) =>
-    course.lessons.some(
-      (lesson) =>
-        !completedLessonIds.includes(
-          `${course.slug}/${lesson.slug}`
-        )
-    )
-);
+const continueCourse = courses
+  .filter((course) =>
+    enrolledCourses.includes(course.slug)
+  )
+  .find(
+    (course) =>
+      course.lessons.some(
+        (lesson) =>
+          !completedLessonIds.includes(
+            `${course.slug}/${lesson.slug}`
+          )
+      )
+  );
 const nextLesson =
   continueCourse?.lessons.find(
     (lesson) =>
@@ -68,6 +80,22 @@ const nextLesson =
         `${continueCourse.slug}/${lesson.slug}`
       )
   );
+  const completedCourses = courses
+  .filter((course) =>
+    enrolledCourses.includes(course.slug)
+  )
+  .filter((course) => {
+    const completed = course.lessons.filter(
+      (lesson) =>
+        completedLessonIds.includes(
+          `${course.slug}/${lesson.slug}`
+        )
+    ).length;
+
+    return (
+      completed === course.lessons.length
+    );
+  }).length;
 
   return (
     <div className="p-10">
@@ -78,10 +106,21 @@ const nextLesson =
   Welcome {userEmail}
 </p>
 <p className="mt-2">
-  Total Courses: {courses.length}
+  Enrolled Courses: {
+    enrolledCourses.length
+  }
+</p>
+<p className="mt-2">
+  Completed Courses: {completedCourses}
 </p>
 <p className="mt-2">
   Completed Lessons: {completedLessons}
+</p>
+<p className="mt-2">
+Active Courses: {
+  enrolledCourses.length -
+  completedCourses
+}
 </p>
 
 <p className="mt-2">
@@ -119,8 +158,23 @@ const nextLesson =
 <h2 className="text-2xl font-bold mt-8">
   Your Courses
 </h2>
+{enrolledCourses.length === 0 && (
+  <div className="border rounded-lg p-6 mt-4">
+    <p className="font-semibold">
+      No enrolled courses yet.
+    </p>
 
-{courses.map((course) => {
+    <p className="mt-2">
+      Enroll in a course to begin learning.
+    </p>
+  </div>
+)}
+
+{courses
+  .filter((course) =>
+    enrolledCourses.includes(course.slug)
+  )
+  .map((course) => {
   const completed = course.lessons.filter(
   (lesson) =>
     completedLessonIds.includes(

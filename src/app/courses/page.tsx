@@ -1,5 +1,6 @@
 import CourseCard from "@/components/CourseCard";
 
+
 const courses = [
   {
     slug: "ai-for-beginners",
@@ -37,7 +38,9 @@ export default function CoursesPage() {
   title={course.title}
   instructor={course.instructor}
   description={course.description}
+  
 />
+
         ))}
       </div>
     </div>

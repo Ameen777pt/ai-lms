@@ -1,6 +1,7 @@
 import { courses } from "@/data/courses";
 import Link from "next/link";
 import CompleteLessonButton from "@/components/CompleteLessonButton";
+import EnrollmentGuard from "@/components/EnrollmentGuard";
 export default async function LessonPage({
   params,
 }: {
@@ -39,8 +40,9 @@ const nextLesson =
     ? course.lessons[lessonIndex + 1]
     : null;
 
-  return (
-  <div className="p-10">
+ return (
+  <EnrollmentGuard courseSlug={slug}>
+    <div className="p-10">
     <h1 className="text-4xl font-bold">
       {lesson.title}
     </h1>
@@ -95,6 +97,7 @@ const nextLesson =
     <div></div>
   )}
 </div>
-  </div>
+      </div>
+  </EnrollmentGuard>
 );
 }

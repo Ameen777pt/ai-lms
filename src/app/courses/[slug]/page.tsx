@@ -1,6 +1,7 @@
 import LessonList from "@/components/LessonList";
 import CourseContent from "@/components/CourseContent";
 import { courses } from "@/data/courses";
+import EnrollButton from "@/components/EnrollButton";
 
 
 
@@ -37,6 +38,9 @@ export default async function CoursePage({
 
 
       <p>{course.description}</p>
+      <EnrollButton
+  courseSlug={course.slug}
+/>
       <CourseContent
   lessons={course.lessons}
   courseSlug={course.slug}
