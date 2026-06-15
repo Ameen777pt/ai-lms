@@ -1,4 +1,5 @@
 "use client";
+import CertificateButton from "./CertificateButton";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -14,10 +15,12 @@ type Lesson = {
 export default function CourseContent({
   lessons,
   courseSlug,
+  courseTitle,
 }: {
   lessons: Lesson[];
   courseSlug: string;
-}) {
+  courseTitle: string;
+}){
   const [completedLessonIds, setCompletedLessonIds] =
     useState<string[]>([]);
 
@@ -57,10 +60,16 @@ const progress = Math.round(
       </div>
 
       {progress === 100 && (
-        <p className="text-green-600 font-bold mt-4">
-          🏆 Course Completed!
-        </p>
-      )}
+  <>
+    <p className="text-green-600 font-bold mt-4">
+      🏆 Course Completed!
+    </p>
+
+    <CertificateButton
+  courseTitle={courseTitle}
+/>
+  </>
+)}
 
       <div className="space-y-3 mt-6">
         {lessons.map((lesson, index) => (
