@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import CourseCard from "@/components/CourseCard";
 import Link from "next/link";
 
@@ -30,12 +31,35 @@ const courses = [
 ];
 
 export default function CoursesPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] =
   useState("");
   const [sortOrder, setSortOrder] =
   useState("asc");
   const [selectedCategory, setSelectedCategory] =
   useState("All");
+  const [favorites, setFavorites] =
+  useState<string[]>([]);
+  useEffect(() => {
+  const userEmail =
+    localStorage.getItem("userEmail");
+
+  if (!userEmail) {
+  router.push("/login");
+  return;
+}
+
+  const savedFavorites =
+    localStorage.getItem(
+      `favorites_${userEmail}`
+    );
+
+  if (savedFavorites) {
+    setFavorites(
+      JSON.parse(savedFavorites)
+    );
+  }
+}, []);
   const filteredCourses = courses
   .filter(
   (course) =>
@@ -86,6 +110,31 @@ const totalInstructors = new Set(
     (course) => course.instructor
   )
 ).size;
+const toggleFavorite = (
+  slug: string
+) => {
+  const userEmail =
+    localStorage.getItem("userEmail");
+
+  if (!userEmail) {
+    return;
+  }
+
+  const updatedFavorites =
+    favorites.includes(slug)
+      ? favorites.filter(
+          (favoriteSlug) =>
+            favoriteSlug !== slug
+        )
+      : [...favorites, slug];
+
+  setFavorites(updatedFavorites);
+
+  localStorage.setItem(
+    `favorites_${userEmail}`,
+    JSON.stringify(updatedFavorites)
+  );
+};
   return (
     <div className="p-10">
       <h1 className="text-4xl font-bold mb-8">
@@ -238,13 +287,16 @@ const totalInstructors = new Set(
 
       <div className="grid md:grid-cols-3 gap-6">
         {filteredCourses.map((course) => (
-          <CourseCard
+         <CourseCard
   key={course.slug}
   slug={course.slug}
   title={course.title}
   instructor={course.instructor}
   description={course.description}
-  
+  isFavorite={favorites.includes(
+    course.slug
+  )}
+  toggleFavorite={toggleFavorite}
 />
 
         ))}
