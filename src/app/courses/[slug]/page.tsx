@@ -3,6 +3,7 @@ import CourseContent from "@/components/CourseContent";
 import { courses } from "@/data/courses";
 import EnrollButton from "@/components/EnrollButton";
 import CertificateButton from "@/components/CertificateButton";
+import CourseReviews from "@/components/CourseReviews";
 
 
 export default async function CoursePage({
@@ -45,6 +46,9 @@ export default async function CoursePage({
   lessons={course.lessons}
   courseSlug={course.slug}
   courseTitle={course.title}
+/>
+<CourseReviews
+  courseSlug={course.slug}
 />
       
 
