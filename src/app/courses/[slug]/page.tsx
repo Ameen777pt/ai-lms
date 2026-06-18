@@ -4,6 +4,7 @@ import { courses } from "@/data/courses";
 import EnrollButton from "@/components/EnrollButton";
 import CertificateButton from "@/components/CertificateButton";
 import CourseReviews from "@/components/CourseReviews";
+import RecentlyViewedTracker from "@/components/RecentlyViewedTracker";
 
 
 export default async function CoursePage({
@@ -26,6 +27,9 @@ export default async function CoursePage({
 
   return (
     <div className="p-10">
+      <RecentlyViewedTracker
+  courseSlug={course.slug}
+/>
       <h1 className="text-4xl font-bold mb-4">
         {course.title}
       </h1>
