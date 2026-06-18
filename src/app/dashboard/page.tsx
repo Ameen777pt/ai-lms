@@ -102,10 +102,32 @@ const nextLesson =
         )
     ).length;
 
+  
     return (
       completed === course.lessons.length
     );
   }).length;
+  const achievements = [];
+
+if (enrolledCourses.length >= 1) {
+  achievements.push(
+    "🏅 First Enrollment"
+  );
+}
+
+if (
+  completedLessonIds.length >= 1
+) {
+  achievements.push(
+    "🏅 First Lesson Completed"
+  );
+}
+
+if (completedCourses >= 1) {
+  achievements.push(
+    "🏅 Course Finisher"
+  );
+}
 
   return (
     <div className="p-10">
@@ -234,6 +256,28 @@ const progress = Math.round(
 </Link>
 );
 })}
+<h2 className="text-2xl font-bold mt-8">
+  Achievements
+</h2>
+
+{achievements.length === 0 && (
+  <p className="mt-2">
+    No achievements unlocked yet.
+  </p>
+)}
+
+<div className="grid md:grid-cols-2 gap-4 mt-4">
+  {achievements.map(
+    (achievement) => (
+      <div
+        key={achievement}
+        className="border rounded-lg p-4"
+      >
+        {achievement}
+      </div>
+    )
+  )}
+</div>
 <h2 className="text-2xl font-bold mt-8">
   Recently Viewed
 </h2>
