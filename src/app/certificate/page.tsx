@@ -1,8 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function CertificatePage() {
+function CertificateContent() {
   const searchParams = useSearchParams();
 
   const courseTitle =
@@ -105,5 +106,13 @@ export default function CertificatePage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function CertificatePage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <CertificateContent />
+    </Suspense>
   );
 }
