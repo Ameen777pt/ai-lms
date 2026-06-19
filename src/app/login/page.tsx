@@ -30,8 +30,9 @@ const handleLogin = (e: React.FormEvent) => {
 }
 };
   return (
-    <div className="max-w-md mx-auto mt-20">
-      <h1 className="text-4xl font-bold mb-6">
+   <div className="min-h-[70vh] flex items-center justify-center px-4">
+ <div className="w-full max-w-sm mx-auto">
+      <h1 className="text-4xl font-bold mb-6 text-center">
         Login
       </h1>
 
@@ -62,5 +63,6 @@ const handleLogin = (e: React.FormEvent) => {
         </button>
       </form>
     </div>
+</div>
   );
 }

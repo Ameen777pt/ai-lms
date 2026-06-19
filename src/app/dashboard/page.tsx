@@ -153,10 +153,10 @@ const recommendedCourses =
 
   return (
     <div className="p-10">
-      <h1 className="text-4xl font-bold text-red-500">
+      <h1 className="text-3xl md:text-5xl font-bold text-red-500">
   Dashboard
 </h1>
-<p className="mt-4 text-xl">
+<p className="text-lg md:text-2xl break-words">
   Welcome {userEmail}
 </p>
 <Link
@@ -165,30 +165,50 @@ const recommendedCourses =
 >
   View Profile
 </Link>
-<p className="mt-2">
-  Enrolled Courses: {
-    enrolledCourses.length
-  }
-</p>
-<p className="mt-2">
-  Completed Courses: {completedCourses}
-</p>
-<p className="mt-2">
-  Completed Lessons: {completedLessons}
-</p>
-<p className="mt-2">
-Active Courses: {
-  enrolledCourses.length -
-  completedCourses
-}
-</p>
+<div className="grid grid-cols-2 gap-4 mt-6">
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">📚 Enrolled</p>
+    <p className="text-4xl font-bold mt-2">
+      {enrolledCourses.length}
+    </p>
+  </div>
 
-<p className="mt-2">
-  Pending Lessons: {pendingLessons}
-</p>
-<p className="mt-2">
-  Progress: {progressPercentage}%
-</p>
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">✅ Completed</p>
+    <p className="text-4xl font-bold mt-2">
+      {completedCourses}
+    </p>
+  </div>
+
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">🎯 Lessons</p>
+    <p className="text-4xl font-bold mt-2">
+      {completedLessons}
+    </p>
+  </div>
+
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">🔥Active</p>
+    <p className="text-4xl font-bold mt-2">
+      {enrolledCourses.length -
+        completedCourses}
+    </p>
+  </div>
+
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">⏳ Pending</p>
+    <p className="text-4xl font-bold mt-2">
+      {pendingLessons}
+    </p>
+  </div>
+
+  <div className="border rounded-lg p-6 text-center">
+    <p className="text-gray-400 text-sm">📈 Progress</p>
+    <p className="text-4xl font-bold mt-2">
+      {progressPercentage}%
+    </p>
+  </div>
+</div>
 <div className="w-full bg-gray-300 rounded-full h-4 mt-3">
   <div
     className="bg-green-500 h-4 rounded-full"
@@ -314,7 +334,7 @@ const progress = Math.round(
   </p>
 )}
 
-{notifications.map(
+{[...new Set(notifications)].map(
   (notification, index) => (
     <div
   key={index}

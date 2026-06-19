@@ -10,18 +10,18 @@ export default function Navbar({
   isLoggedIn,
 }: NavbarProps) {
   return (
-   <nav className="flex justify-between items-center p-4 border-b print:hidden">
+   <nav className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b print:hidden">
       <Link href="/" className="text-xl font-bold">
   {title}
 </Link>
-<div className="flex gap-4">
+<div className="flex flex-wrap justify-center gap-4">
   <Link href="/">Home</Link>
   <Link href="/courses">Courses</Link>
   <Link href="/dashboard">Dashboard</Link>
   <Link href="/profile">Profile</Link>
 </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4">
   <ThemeToggle />
 
   <button className="px-4 py-2 bg-black text-white rounded-lg">
