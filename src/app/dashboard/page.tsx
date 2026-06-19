@@ -141,6 +141,15 @@ if (completedCourses >= 1) {
     "🏅 Course Finisher"
   );
 }
+const recommendedCourses =
+  courses
+    .filter(
+      (course) =>
+        !enrolledCourses.includes(
+          course.slug
+        )
+    )
+    .slice(0, 2);
 
   return (
     <div className="p-10">
@@ -269,6 +278,32 @@ const progress = Math.round(
 </Link>
 );
 })}
+<h2 className="text-2xl font-bold mt-8">
+  Recommended For You
+</h2>
+
+{recommendedCourses.length === 0 && (
+  <p className="mt-2">
+    You've enrolled in all courses.
+  </p>
+)}
+
+{recommendedCourses.map((course) => (
+  <Link
+    key={course.slug}
+    href={`/courses/${course.slug}`}
+  >
+    <div className="border rounded-lg p-4 mt-4">
+      <h3 className="font-semibold">
+        {course.title}
+      </h3>
+
+      <p className="mt-2">
+        Instructor: {course.instructor}
+      </p>
+    </div>
+  </Link>
+))}
 <h2 className="text-2xl font-bold mt-8">
   Notifications
 </h2>
