@@ -14,6 +14,8 @@ export default function DashboardPage() {
   useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] =
   useState<string[]>([]);
+  const [notifications, setNotifications] =
+  useState<string[]>([]);
   const handleLogout = () => {
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("userEmail");
@@ -49,6 +51,17 @@ const storedRecent =
   );
 
 setRecentlyViewed(storedRecent);
+
+const storedNotifications =
+  JSON.parse(
+    localStorage.getItem(
+      "notifications"
+    ) || "[]"
+  );
+
+setNotifications(
+  storedNotifications
+);
 
   const isLoggedIn =
     localStorage.getItem("isLoggedIn");
@@ -256,6 +269,26 @@ const progress = Math.round(
 </Link>
 );
 })}
+<h2 className="text-2xl font-bold mt-8">
+  Notifications
+</h2>
+
+{notifications.length === 0 && (
+  <p className="mt-2">
+    No notifications yet.
+  </p>
+)}
+
+{notifications.map(
+  (notification, index) => (
+    <div
+  key={index}
+  className="bg-amber-100 text-black border border-amber-300 rounded-lg p-4 mt-4"
+>
+      🔔 {notification}
+    </div>
+  )
+)}
 <h2 className="text-2xl font-bold mt-8">
   Achievements
 </h2>

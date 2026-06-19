@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 type NavbarProps = {
   title: string;
   isLoggedIn: boolean;
@@ -20,9 +21,13 @@ export default function Navbar({
   <Link href="/profile">Profile</Link>
 </div>
 
-      <button className="px-4 py-2 bg-black text-white rounded-lg">
-       {isLoggedIn ? "Dashboard" : "Login"}
-      </button>
+      <div className="flex items-center gap-4">
+  <ThemeToggle />
+
+  <button className="px-4 py-2 bg-black text-white rounded-lg">
+    {isLoggedIn ? "Dashboard" : "Login"}
+  </button>
+</div>
     </nav>
   );
 }

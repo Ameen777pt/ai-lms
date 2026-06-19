@@ -33,6 +33,26 @@ export default function EnrollButton({
       !enrolledCourses.includes(courseSlug)
     ) {
       enrolledCourses.push(courseSlug);
+      const notifications =
+  JSON.parse(
+    localStorage.getItem(
+      "notifications"
+    ) || "[]"
+  );
+
+notifications.unshift(
+  `Enrolled in ${courseSlug}`
+);
+if (enrolledCourses.length === 1) {
+  notifications.unshift(
+    "🏅 Achievement Unlocked: First Enrollment"
+  );
+}
+
+localStorage.setItem(
+  "notifications",
+  JSON.stringify(notifications)
+);
 
       localStorage.setItem(
         "enrolledCourses",
