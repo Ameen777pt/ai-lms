@@ -73,21 +73,14 @@ return (
           ? handleIncomplete
           : handleComplete
       }
-      className="px-4 py-2 bg-green-600 text-white rounded"
+      className="px-6 py-3 bg-green-600 text-white rounded-lg"
     >
       {isCompleted
         ? "Mark Incomplete"
         : "Mark Complete"}
     </button>
 
-    {isCompleted && nextLessonUrl && (
-      <Link
-        href={nextLessonUrl}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Next Lesson →
-      </Link>
-    )}
+    
   </div>
 );
 }

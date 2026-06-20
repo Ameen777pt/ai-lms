@@ -14,26 +14,16 @@ function CertificateContent() {
 
   return (
     <div className="p-10 print:p-0">
-      <div
+     <div
+  className="w-full max-w-4xl mx-auto p-5 md:p-10 rounded-2xl text-center"
   style={{
     border: "8px solid #d4af37",
-    padding: "40px",
-    textAlign: "center",
-    maxWidth: "800px",
-    margin: "0 auto",
-    borderRadius: "16px",
   }}
 >
-       <h1
-  style={{
-    fontSize: "48px",
-    fontWeight: "bold",
-    marginBottom: "20px",
-  }}
->
+       <h1 className="text-4xl md:text-6xl font-bold">
   Certificate of Completion
 </h1>
-       <p className="mt-4">
+       <p className="mt-4 break-words">
   Certificate No:
   CERT-{courseTitle.replace(/\s+/g, "-").toUpperCase()}
 </p>
@@ -44,11 +34,7 @@ function CertificateContent() {
         </p>
 
         <h2
-  style={{
-    fontSize: "32px",
-    fontWeight: "bold",
-    marginTop: "10px",
-  }}
+  className="text-2xl md:text-4xl font-bold mt-2 break-words"
 >
   {userEmail}
 </h2>
@@ -57,9 +43,9 @@ function CertificateContent() {
           For successfully completing
         </p>
 
-        <h2 className="text-3xl font-bold mt-2">
-          {courseTitle}
-        </h2>
+        <h2 className="text-2xl md:text-4xl font-bold mt-2 break-words">
+  {courseTitle}
+</h2>
 
         <p className="mt-8">
   Issued on:

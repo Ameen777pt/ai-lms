@@ -30,7 +30,7 @@ export default async function CoursePage({
       <RecentlyViewedTracker
   courseSlug={course.slug}
 />
-      <h1 className="text-4xl font-bold mb-4">
+      <h1 className="text-4xl md:text-6xl font-bold">
         {course.title}
       </h1>
 

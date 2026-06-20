@@ -78,7 +78,7 @@ const progress = Math.round(
             className="border p-4 rounded-lg"
           >
            <Link href={`/courses/${courseSlug}/${lesson.slug}`}>
-  <h3 className="font-semibold text-red-500">
+  <h3 className="text-white font-bold">
   Lesson {index + 1}: {lesson.title}
 </h3>
 </Link>

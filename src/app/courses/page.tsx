@@ -160,6 +160,7 @@ const toggleFavorite = (
       {featuredCourse.description}
     </p>
   </div>
+  </Link>
   <h2 className="text-2xl font-bold mb-4">
   📊 Platform Statistics
 </h2>
@@ -186,7 +187,7 @@ const toggleFavorite = (
     <p>{totalInstructors}</p>
   </div>
 </div>
-</Link>
+
       <h2 className="text-2xl font-bold mb-4">
   🔥 Popular Courses
 </h2>
@@ -225,15 +226,14 @@ const toggleFavorite = (
   </button>
   
 </div>
-<div>
 <div className="flex flex-col md:flex-row gap-2 mt-4">
   <select
     value={sortOrder}
     onChange={(e) =>
       setSortOrder(e.target.value)
     }
-    className="flex-1 border p-3 rounded">
-  
+    className="flex-1 border p-3 rounded"
+  >
     <option value="asc">
       A → Z
     </option>
@@ -242,8 +242,7 @@ const toggleFavorite = (
       Z → A
     </option>
   </select>
-</div>
-<div className="flex flex-col md:flex-row gap-2 mt-4">
+
   <select
     value={selectedCategory}
     onChange={(e) =>
@@ -251,26 +250,26 @@ const toggleFavorite = (
         e.target.value
       )
     }
-   className="flex-1 border p-3 rounded">
-  
+    className="flex-1 border p-3 rounded"
+  >
     <option value="All">
       All Categories
     </option>
 
     <option value="AI">
-  AI ({aiCount})
-</option>
+      AI ({aiCount})
+    </option>
 
     <option value="React">
-  React ({reactCount})
-</option>
+      React ({reactCount})
+    </option>
 
     <option value="Next.js">
-  Next.js ({nextCount})
-</option>
+      Next.js ({nextCount})
+    </option>
   </select>
 </div>
-</div>
+
 <button
   onClick={() => {
     setSearchTerm("");
