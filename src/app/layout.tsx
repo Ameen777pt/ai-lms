@@ -32,9 +32,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider />
   <Navbar
-    title="AI LMS"
-    isLoggedIn={false}
-  />
+  title="AI LMS"
+/>
 
   {children}
 </body>

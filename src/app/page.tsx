@@ -1,40 +1,72 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import Footer from "@/components/Footer";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CoursesSection from "@/components/CoursesSection";
+import Link from "next/link";
+
+
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+useEffect(() => {
+  const loggedIn =
+    localStorage.getItem("isLoggedIn");
+
+  setIsLoggedIn(
+    loggedIn === "true"
+  );
+}, []);
+
   return (
     <>
       
 
       <HeroSection />
 
-        <div className="flex justify-center my-6">
-  <button
-    onClick={() => setIsLoggedIn(!isLoggedIn)}
-    className="px-6 py-3 bg-green-600 text-white rounded-lg"
-  >
-    {isLoggedIn ? "Logout" : "Login"}
-  </button>
-</div> 
+       <div className="flex justify-center gap-4 my-6">
+  {isLoggedIn ? (
+    <>
+      <Link
+        href="/courses"
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Courses
+      </Link>
 
-{isLoggedIn && (
-  <p className="text-center text-xl font-semibold">
-    Welcome back, Ameen!
-  </p>
-)}
+      <Link
+        href="/dashboard"
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        Dashboard
+      </Link>
+    </>
+  ) : (
+    <>
+      <Link
+        href="/courses"
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Get Started
+      </Link>
 
-{!isLoggedIn && (
-  <p className="text-center text-xl font-semibold text-red-500">
-    Please log in to continue.
-  </p>
-)}
+      <Link
+        href="/login"
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        Login
+      </Link>
+    </>
+  )}
+</div>
+
+
 
       <FeaturesSection />
       <TestimonialsSection />

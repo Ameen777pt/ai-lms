@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
 import CourseCard from "@/components/CourseCard";
 import Link from "next/link";
 
@@ -31,7 +31,7 @@ const courses = [
 ];
 
 export default function CoursesPage() {
-  const router = useRouter();
+ 
   const [searchTerm, setSearchTerm] =
   useState("");
   const [sortOrder, setSortOrder] =
@@ -42,10 +42,9 @@ export default function CoursesPage() {
   useState<string[]>([]);
   useEffect(() => {
   const userEmail =
-    localStorage.getItem("userEmail");
+  localStorage.getItem("userEmail");
 
-  if (!userEmail) {
-  router.push("/login");
+if (!userEmail) {
   return;
 }
 

@@ -9,9 +9,7 @@ export default function HeroSection() {
         Your intelligent learning platform for courses, lessons, and AI assistance.
       </p>
 
-      <button className="px-6 py-3 bg-blue-600 text-white rounded-lg">
-        Get Started
-      </button>
+      
     </section>
   );
 }

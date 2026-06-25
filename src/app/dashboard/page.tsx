@@ -16,12 +16,7 @@ export default function DashboardPage() {
   useState<string[]>([]);
   const [notifications, setNotifications] =
   useState<string[]>([]);
-  const handleLogout = () => {
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("userEmail");
-
-  router.push("/login");
-};
+  
   useEffect(() => {
     
   const email =
@@ -400,12 +395,7 @@ const progress = Math.round(
 </Link>
   );
 })}
-      <button
-  onClick={handleLogout}
-  className="mt-8 bg-red-600 text-white px-6 py-3 rounded-lg"
->
-  Logout
-</button>
+      
     </div>
   );
 }
