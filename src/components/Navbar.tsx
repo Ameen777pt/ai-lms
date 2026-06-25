@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 type NavbarProps = {
   title: string;
@@ -11,6 +11,7 @@ export default function Navbar({
   title,
 }: NavbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 useEffect(() => {
@@ -20,7 +21,7 @@ useEffect(() => {
   setIsLoggedIn(
     loggedIn === "true"
   );
-}, []);
+}, [pathname]);
 const handleLogout = () => {
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("userEmail");
@@ -37,25 +38,32 @@ const handleLogout = () => {
 <div className="flex flex-wrap justify-center gap-4">
   <Link href="/">Home</Link>
 
-  {isLoggedIn ? (
+  {isLoggedIn && (
     <>
       <Link href="/courses">Courses</Link>
       <Link href="/dashboard">Dashboard</Link>
       <Link href="/profile">Profile</Link>
-
-      <button
-        onClick={handleLogout}
-        className="text-red-600 hover:underline"
-      >
-        Logout
-      </button>
     </>
-  ) : (
-    <Link href="/login">Login</Link>
   )}
 </div>
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
+  {isLoggedIn ? (
+    <button
+      onClick={handleLogout}
+      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+    >
+      Logout
+    </button>
+  ) : (
+    <Link
+      href="/login"
+      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+    >
+      Login
+    </Link>
+  )}
+
   <ThemeToggle />
 </div>
     </nav>

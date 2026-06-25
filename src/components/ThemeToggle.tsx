@@ -44,8 +44,8 @@ export default function ThemeToggle() {
       className="border px-4 py-2 rounded-lg"
     >
       {theme === "dark"
-        ? "☀️ Light Mode"
-        : "🌙 Dark Mode"}
+        ? "☀️"
+        : "🌙"}
     </button>
   );
 }
