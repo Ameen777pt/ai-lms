@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (
     e: React.FormEvent
@@ -33,17 +35,9 @@ export default function LoginPage() {
       await response.json();
 
     if (response.ok) {
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
+      login(email);
 
-      localStorage.setItem(
-        "userEmail",
-        email
-      );
-
-      router.push("/dashboard");
+router.push("/dashboard");
     } else {
       alert(data.error);
     }

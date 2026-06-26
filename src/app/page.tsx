@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CoursesSection from "@/components/CoursesSection";
 import Link from "next/link";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 
 
 

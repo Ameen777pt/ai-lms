@@ -3,11 +3,12 @@ import { courses } from "@/data/courses";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [userEmail, setUserEmail] =
-  useState("");
+const { userEmail } = useAuth();
+ 
   const [completedLessonIds, setCompletedLessonIds] =
   useState<string[]>([]);
   const [enrolledCourses, setEnrolledCourses] =
@@ -19,12 +20,7 @@ export default function DashboardPage() {
   
   useEffect(() => {
     
-  const email =
-    localStorage.getItem("userEmail");
-
-  if (email) {
-    setUserEmail(email);
-  }
+ 
 
   const storedLessons = JSON.parse(
     localStorage.getItem("completedLessons") ||
@@ -58,13 +54,7 @@ setNotifications(
   storedNotifications
 );
 
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn");
-
-  if (!isLoggedIn) {
-    router.push("/login");
-  }
-}, [router]);
+}, []);
 const completedLessons =
   completedLessonIds.length;
 
@@ -147,6 +137,7 @@ const recommendedCourses =
     .slice(0, 2);
 
   return (
+    <ProtectedRoute>
     <div className="p-10">
       <h1 className="text-3xl md:text-5xl font-bold text-red-500">
   Dashboard
@@ -397,5 +388,7 @@ const progress = Math.round(
 })}
       
     </div>
+    </ProtectedRoute>
   );
+
 }

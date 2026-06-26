@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-import useAuth from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 type NavbarProps = {
   title: string;
 };
