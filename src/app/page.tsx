@@ -1,28 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
+
 import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import Footer from "@/components/Footer";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CoursesSection from "@/components/CoursesSection";
 import Link from "next/link";
+import useAuth from "@/hooks/useAuth";
 
 
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
-useEffect(() => {
-  const loggedIn =
-    localStorage.getItem("isLoggedIn");
-
-  setIsLoggedIn(
-    loggedIn === "true"
-  );
-}, []);
+  const { isLoggedIn } = useAuth();
 
   return (
     <>

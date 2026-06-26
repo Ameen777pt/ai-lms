@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
+import useAuth from "@/hooks/useAuth";
 type NavbarProps = {
   title: string;
 };
@@ -11,23 +11,10 @@ export default function Navbar({
   title,
 }: NavbarProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-useEffect(() => {
-  const loggedIn =
-    localStorage.getItem("isLoggedIn");
-
-  setIsLoggedIn(
-    loggedIn === "true"
-  );
-}, [pathname]);
+  const { isLoggedIn, logout } = useAuth();
 const handleLogout = () => {
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("userEmail");
-
-  setIsLoggedIn(false);
-
+  logout();
   router.push("/");
 };
   return (
