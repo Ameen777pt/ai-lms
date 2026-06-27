@@ -13,37 +13,62 @@ export default function EnrollButton({
     useState(false);
 
   useEffect(() => {
-    const enrolledCourses = JSON.parse(
-      localStorage.getItem("enrolledCourses") ||
-        "[]"
+  async function checkEnrollment() {
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) return;
+
+    const response = await fetch(
+      `/api/enrollments?email=${encodeURIComponent(email)}`
     );
+
+    if (!response.ok) return;
+
+    const enrollments = await response.json();
 
     setIsEnrolled(
-      enrolledCourses.includes(courseSlug)
+      enrollments.some(
+        (enrollment: {
+          courseSlug: string;
+        }) =>
+          enrollment.courseSlug === courseSlug
+      )
     );
-  }, [courseSlug]);
+  }
 
-  const handleEnroll = () => {
-    const enrolledCourses = JSON.parse(
-      localStorage.getItem("enrolledCourses") ||
-        "[]"
-    );
+  checkEnrollment();
+}, [courseSlug]);
 
-    if (
-      !enrolledCourses.includes(courseSlug)
-    ) {
-      enrolledCourses.push(courseSlug);
-      const notifications =
-  JSON.parse(
-    localStorage.getItem(
-      "notifications"
-    ) || "[]"
-  );
+ const handleEnroll = async () => {
+   
 
-notifications.unshift(
-  `Enrolled in ${courseSlug}`
+    if (!isEnrolled) {
+     const userEmail = localStorage.getItem("userEmail");
+
+const response = await fetch("/api/enrollments", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: userEmail,
+    courseSlug,
+  }),
+});
+
+if (!response.ok) {
+  const data = await response.json();
+  alert(data.error);
+  return;
+}
+
+const notifications = JSON.parse(
+  localStorage.getItem("notifications") || "[]"
 );
-if (enrolledCourses.length === 1) {
+
+notifications.unshift(`Enrolled in ${courseSlug}`);
+
+if (!isEnrolled) {
   notifications.unshift(
     "🏅 Achievement Unlocked: First Enrollment"
   );
@@ -54,30 +79,28 @@ localStorage.setItem(
   JSON.stringify(notifications)
 );
 
-      localStorage.setItem(
-        "enrolledCourses",
-        JSON.stringify(enrolledCourses)
-      );
-
-      setIsEnrolled(true);
+setIsEnrolled(true);
     }
   };
-  const handleUnenroll = () => {
-  const enrolledCourses = JSON.parse(
-    localStorage.getItem("enrolledCourses") ||
-      "[]"
-  );
+ const handleUnenroll = async () => {
+  const email = localStorage.getItem("userEmail");
 
-  const updatedCourses =
-    enrolledCourses.filter(
-      (slug: string) =>
-        slug !== courseSlug
-    );
+  const response = await fetch("/api/enrollments", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      courseSlug,
+    }),
+  });
 
-  localStorage.setItem(
-    "enrolledCourses",
-    JSON.stringify(updatedCourses)
-  );
+  if (!response.ok) {
+    const data = await response.json();
+    alert(data.error);
+    return;
+  }
 
   setIsEnrolled(false);
 };
