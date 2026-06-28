@@ -10,39 +10,9 @@ export default function FavoritesPage() {
     const router = useRouter();
   const [favorites, setFavorites] =
     useState<string[]>([]);
-    const removeFavorite = (
+const removeFavorite = async (
   slug: string
 ) => {
-  const isLoggedIn =
-  localStorage.getItem(
-    "isLoggedIn"
-  );
-
-if (!isLoggedIn) {
-  router.push("/login");
-  return;
-}
-
-const userEmail =
-  localStorage.getItem(
-    "userEmail"
-  );
-
-  const updatedFavorites =
-    favorites.filter(
-      (favoriteSlug) =>
-        favoriteSlug !== slug
-    );
-
-  setFavorites(updatedFavorites);
-
-  localStorage.setItem(
-    `favorites_${userEmail}`,
-    JSON.stringify(updatedFavorites)
-  );
-};
-
- useEffect(() => {
   const isLoggedIn =
     localStorage.getItem("isLoggedIn");
 
@@ -56,16 +26,63 @@ const userEmail =
 
   if (!userEmail) return;
 
-  const savedFavorites =
-    localStorage.getItem(
-      `favorites_${userEmail}`
+  const response = await fetch(
+    "/api/favorites",
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        email: userEmail,
+        courseSlug: slug,
+      }),
+    }
+  );
+
+  if (!response.ok) return;
+
+  setFavorites(
+    favorites.filter(
+      (favoriteSlug) =>
+        favoriteSlug !== slug
+    )
+  );
+};
+useEffect(() => {
+  const loadFavorites = async () => {
+    const isLoggedIn =
+      localStorage.getItem("isLoggedIn");
+
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
+
+    const userEmail =
+      localStorage.getItem("userEmail");
+
+    if (!userEmail) return;
+
+    const response = await fetch(
+      `/api/favorites?email=${userEmail}`
     );
 
-  if (savedFavorites) {
+    if (!response.ok) return;
+
+    const data = await response.json();
+
     setFavorites(
-      JSON.parse(savedFavorites)
+      data.map(
+        (favorite: {
+          courseSlug: string;
+        }) => favorite.courseSlug
+      )
     );
-  }
+  };
+
+  loadFavorites();
 }, [router]);
   const favoriteCourses =
   courses.filter((course) =>

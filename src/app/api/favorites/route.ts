@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { getUserByEmail } from "@/lib/user";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const user = await prisma.user.findUnique({
     where: { email },
     include: {
-      enrollments: true,
+      favorites: true,
     },
   });
 
@@ -28,8 +28,9 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.json(user.enrollments);
+  return NextResponse.json(user.favorites);
 }
+
 export async function POST(request: Request) {
   const { email, courseSlug } = await request.json();
 
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     );
   }
 
-const user = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
 
   if (!user) {
     return NextResponse.json(
@@ -49,8 +50,8 @@ const user = await getUserByEmail(email);
     );
   }
 
-  const existingEnrollment =
-    await prisma.enrollment.findUnique({
+  const existingFavorite =
+    await prisma.favorite.findUnique({
       where: {
         userId_courseSlug: {
           userId: user.id,
@@ -59,23 +60,23 @@ const user = await getUserByEmail(email);
       },
     });
 
-  if (existingEnrollment) {
+  if (existingFavorite) {
     return NextResponse.json(
-      { error: "Already enrolled" },
+      { error: "Already favorited" },
       { status: 409 }
     );
   }
 
-  const enrollment =
-    await prisma.enrollment.create({
-      data: {
-        courseSlug,
-        userId: user.id,
-      },
-    });
+  const favorite = await prisma.favorite.create({
+    data: {
+      userId: user.id,
+      courseSlug,
+    },
+  });
 
-  return NextResponse.json(enrollment);
+  return NextResponse.json(favorite);
 }
+
 export async function DELETE(request: Request) {
   const { email, courseSlug } = await request.json();
 
@@ -86,7 +87,7 @@ export async function DELETE(request: Request) {
     );
   }
 
-const user = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
 
   if (!user) {
     return NextResponse.json(
@@ -95,7 +96,7 @@ const user = await getUserByEmail(email);
     );
   }
 
-  await prisma.enrollment.deleteMany({
+  await prisma.favorite.deleteMany({
     where: {
       userId: user.id,
       courseSlug,
@@ -103,6 +104,6 @@ const user = await getUserByEmail(email);
   });
 
   return NextResponse.json({
-    message: "Unenrolled successfully",
+    message: "Favorite removed successfully",
   });
 }

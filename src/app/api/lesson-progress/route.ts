@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getUserByEmail } from "@/lib/user";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -44,9 +45,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+ const user = await getUserByEmail(email);
 
   if (!user) {
     return NextResponse.json(
@@ -103,9 +102,7 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+ const user = await getUserByEmail(email);
 
   if (!user) {
     return NextResponse.json(

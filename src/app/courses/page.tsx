@@ -4,32 +4,7 @@ import { useEffect, useState } from "react";
 import CourseCard from "@/components/CourseCard";
 import Link from "next/link";
 
-
-const courses = [
-  {
-    slug: "ai-for-beginners",
-    title: "AI for Beginners",
-    instructor: "Mike",
-     description:"good course",
-      category: "AI",
-  },
-  {
-    slug: "nextjs-mastery",
-    title: "Next.js Mastery",
-    instructor: "Sarah",
-    description:"next master",
-     category: "Next.js",
-  },
-  {
-    slug: "react-fundamentals",
-    title: "React Fundamentals",
-    instructor: "John",  
-    description:
-    "Learn the fundamentals of React and build modern web applications.",
-     category: "React",
-  },
-];
-
+import { courses } from "@/data/courses";
 export default function CoursesPage() {
  
   const [searchTerm, setSearchTerm] =
@@ -41,23 +16,28 @@ export default function CoursesPage() {
   const [favorites, setFavorites] =
   useState<string[]>([]);
   useEffect(() => {
-  const userEmail =
-  localStorage.getItem("userEmail");
+  const loadFavorites = async () => {
+    const userEmail = localStorage.getItem("userEmail");
 
-if (!userEmail) {
-  return;
-}
+    if (!userEmail) return;
 
-  const savedFavorites =
-    localStorage.getItem(
-      `favorites_${userEmail}`
+    const response = await fetch(
+      `/api/favorites?email=${userEmail}`
     );
 
-  if (savedFavorites) {
+    if (!response.ok) return;
+
+    const data = await response.json();
+
     setFavorites(
-      JSON.parse(savedFavorites)
+      data.map(
+        (favorite: { courseSlug: string }) =>
+          favorite.courseSlug
+      )
     );
-  }
+  };
+
+  loadFavorites();
 }, []);
   const filteredCourses = courses
   .filter(
@@ -109,7 +89,7 @@ const totalInstructors = new Set(
     (course) => course.instructor
   )
 ).size;
-const toggleFavorite = (
+const toggleFavorite = async (
   slug: string
 ) => {
   const userEmail =
@@ -119,20 +99,53 @@ const toggleFavorite = (
     return;
   }
 
-  const updatedFavorites =
-    favorites.includes(slug)
-      ? favorites.filter(
-          (favoriteSlug) =>
-            favoriteSlug !== slug
-        )
-      : [...favorites, slug];
+  if (favorites.includes(slug)) {
+    const response = await fetch(
+      "/api/favorites",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          courseSlug: slug,
+        }),
+      }
+    );
 
-  setFavorites(updatedFavorites);
+    if (!response.ok) return;
 
-  localStorage.setItem(
-    `favorites_${userEmail}`,
-    JSON.stringify(updatedFavorites)
-  );
+    setFavorites(
+      favorites.filter(
+        (favoriteSlug) =>
+          favoriteSlug !== slug
+      )
+    );
+  } else {
+    const response = await fetch(
+      "/api/favorites",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          courseSlug: slug,
+        }),
+      }
+    );
+
+    if (!response.ok) return;
+
+    setFavorites([
+      ...favorites,
+      slug,
+    ]);
+  }
 };
   return (
     <div className="p-10">

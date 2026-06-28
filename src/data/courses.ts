@@ -6,6 +6,7 @@ export const courses = [{
     instructor: "John",
     description:
       "Learn the fundamentals of React and build modern web applications.",
+      category: "React",
     lessons: [
       {
   slug: "introduction-to-react",
@@ -52,6 +53,7 @@ In this lesson you will learn:
     instructor: "Sarah",
     description:
       "Build modern full-stack applications using Next.js and the App Router.",
+      category: "Next.js",
     lessons: [
       {
         slug: "introduction-to-nextjs",
@@ -89,6 +91,7 @@ In this lesson you will learn:
     instructor: "Mike",
     description:
       "Understand the basics of artificial intelligence and machine learning.",
+        category: "AI",
     lessons: [
       {
         slug: "what-is-ai",

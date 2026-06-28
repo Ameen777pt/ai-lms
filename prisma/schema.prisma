@@ -19,6 +19,7 @@ model User {
 
   enrollments Enrollment[]
   lessonProgress LessonProgress[]
+  favorites Favorite[]
 }
 
 model Enrollment {
@@ -42,4 +43,15 @@ model LessonProgress {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseSlug, lessonSlug])
+}
+
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  courseSlug String
+  createdAt  DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseSlug])
 }
