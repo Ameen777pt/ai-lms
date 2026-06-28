@@ -19,41 +19,62 @@ const { userEmail } = useAuth();
   useState<string[]>([]);
   
   useEffect(() => {
-    
- 
+  async function loadDashboardData() {
+    const email =
+      localStorage.getItem("userEmail");
 
-  const storedLessons = JSON.parse(
-    localStorage.getItem("completedLessons") ||
-      "[]"
-  );
+    if (!email) return;
 
-  setCompletedLessonIds(storedLessons);
-const storedCourses = JSON.parse(
-  localStorage.getItem("enrolledCourses") ||
-    "[]"
-);
+    const enrollmentResponse = await fetch(
+      `/api/enrollments?email=${encodeURIComponent(email)}`
+    );
 
-setEnrolledCourses(storedCourses);
-const storedRecent =
-  JSON.parse(
-    localStorage.getItem(
-      "recentlyViewed"
-    ) || "[]"
-  );
+    if (enrollmentResponse.ok) {
+      const enrollments =
+        await enrollmentResponse.json();
 
-setRecentlyViewed(storedRecent);
+      setEnrolledCourses(
+        enrollments.map(
+          (enrollment: {
+            courseSlug: string;
+          }) => enrollment.courseSlug
+        )
+      );
+    }
 
-const storedNotifications =
-  JSON.parse(
-    localStorage.getItem(
-      "notifications"
-    ) || "[]"
-  );
+    const lessonResponse = await fetch(
+      `/api/lesson-progress?email=${encodeURIComponent(email)}`
+    );
 
-setNotifications(
-  storedNotifications
-);
+    if (lessonResponse.ok) {
+      const progress =
+        await lessonResponse.json();
 
+      setCompletedLessonIds(
+        progress.map(
+          (lesson: {
+            courseSlug: string;
+            lessonSlug: string;
+          }) =>
+            `${lesson.courseSlug}/${lesson.lessonSlug}`
+        )
+      );
+    }
+
+    const storedRecent = JSON.parse(
+      localStorage.getItem("recentlyViewed") || "[]"
+    );
+
+    setRecentlyViewed(storedRecent);
+
+    const storedNotifications = JSON.parse(
+      localStorage.getItem("notifications") || "[]"
+    );
+
+    setNotifications(storedNotifications);
+  }
+
+  loadDashboardData();
 }, []);
 const completedLessons =
   completedLessonIds.length;

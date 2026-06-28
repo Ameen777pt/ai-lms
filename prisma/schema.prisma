@@ -18,6 +18,7 @@ model User {
   createdAt   DateTime     @default(now())
 
   enrollments Enrollment[]
+  lessonProgress LessonProgress[]
 }
 
 model Enrollment {
@@ -29,4 +30,16 @@ model Enrollment {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseSlug])
+}
+
+model LessonProgress {
+  id          Int      @id @default(autoincrement())
+  courseSlug  String
+  lessonSlug  String
+  completedAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseSlug, lessonSlug])
 }

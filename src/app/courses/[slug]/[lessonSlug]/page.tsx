@@ -66,7 +66,8 @@ const nextLesson =
   {lesson.content}
 </p>
 <CompleteLessonButton
-  lessonId={`${slug}/${lessonSlug}`}
+  courseSlug={slug}
+  lessonSlug={lessonSlug}
   nextLessonUrl={
     nextLesson
       ? `/courses/${slug}/${nextLesson.slug}`

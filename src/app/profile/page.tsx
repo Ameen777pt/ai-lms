@@ -18,39 +18,65 @@ export default function ProfilePage() {
   const [completedLessonIds, setCompletedLessonIds] =
     useState<string[]>([]);
 
-  useEffect(() => {
+useEffect(() => {
+  async function loadProfileData() {
     const isLoggedIn =
-  localStorage.getItem("isLoggedIn");
+      localStorage.getItem("isLoggedIn");
 
-if (!isLoggedIn) {
-  router.push("/login");
-  return;
-}
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
+
     const email =
       localStorage.getItem("userEmail") || "";
 
     setUserEmail(email);
 
     const savedName =
-  localStorage.getItem("userName") ||
-  "";
+      localStorage.getItem("userName") || "";
 
-setUserName(savedName);
+    setUserName(savedName);
 
-    const storedCourses = JSON.parse(
-      localStorage.getItem("enrolledCourses") ||
-        "[]"
+    const enrollmentResponse = await fetch(
+      `/api/enrollments?email=${encodeURIComponent(email)}`
     );
 
-    setEnrolledCourses(storedCourses);
+    if (enrollmentResponse.ok) {
+      const enrollments =
+        await enrollmentResponse.json();
 
-    const storedLessons = JSON.parse(
-      localStorage.getItem("completedLessons") ||
-        "[]"
+      setEnrolledCourses(
+        enrollments.map(
+          (enrollment: {
+            courseSlug: string;
+          }) => enrollment.courseSlug
+        )
+      );
+    }
+
+    const lessonResponse = await fetch(
+      `/api/lesson-progress?email=${encodeURIComponent(email)}`
     );
 
-    setCompletedLessonIds(storedLessons);
-  }, [router]);
+    if (lessonResponse.ok) {
+      const progress =
+        await lessonResponse.json();
+
+      setCompletedLessonIds(
+        progress.map(
+          (lesson: {
+            courseSlug: string;
+            lessonSlug: string;
+          }) =>
+            `${lesson.courseSlug}/${lesson.lessonSlug}`
+        )
+      );
+    }
+  }
+
+  loadProfileData();
+}, [router]);
 
   const completedCourses = courses
     .filter((course) =>

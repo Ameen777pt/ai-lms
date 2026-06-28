@@ -4,63 +4,94 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Props = {
-  lessonId: string;
+  courseSlug: string;
+  lessonSlug: string;
   nextLessonUrl: string | null;
 };
 
 export default function CompleteLessonButton({
-  lessonId,
+  courseSlug,
+  lessonSlug,
   nextLessonUrl,
 }: Props) {
   const [isCompleted, setIsCompleted] =
     useState(false);
 
+    const lessonId = `${courseSlug}/${lessonSlug}`;
+
   useEffect(() => {
-    const completedLessons = JSON.parse(
-      localStorage.getItem("completedLessons") ||
-        "[]"
+  async function checkLessonProgress() {
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) return;
+
+    const response = await fetch(
+      `/api/lesson-progress?email=${encodeURIComponent(email)}`
     );
 
-    if (
-      completedLessons.includes(lessonId)
-    ) {
-      setIsCompleted(true);
-    }
-  }, [lessonId]);
+    if (!response.ok) return;
 
-  const handleComplete = () => {
-    const completedLessons = JSON.parse(
-      localStorage.getItem("completedLessons") ||
-        "[]"
+    const progress = await response.json();
+
+    setIsCompleted(
+      progress.some(
+        (lesson: {
+          courseSlug: string;
+          lessonSlug: string;
+        }) =>
+          lesson.courseSlug === courseSlug &&
+          lesson.lessonSlug === lessonSlug
+      )
     );
+  }
 
-    if (!completedLessons.includes(lessonId)) {
-      completedLessons.push(lessonId);
+  checkLessonProgress();
+}, [courseSlug, lessonSlug]);
 
-      localStorage.setItem(
-        "completedLessons",
-        JSON.stringify(completedLessons)
-      );
+  const handleComplete = async () => {
+  const email = localStorage.getItem("userEmail");
 
-      setIsCompleted(true);
-    }
-  };
+  const response = await fetch("/api/lesson-progress", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      courseSlug,
+      lessonSlug,
+    }),
+  });
 
-  const handleIncomplete = () => {
-  const completedLessons = JSON.parse(
-    localStorage.getItem("completedLessons") ||
-      "[]"
-  );
+  if (!response.ok) {
+    const data = await response.json();
+    alert(data.error);
+    return;
+  }
 
-  const updatedLessons =
-    completedLessons.filter(
-      (id: string) => id !== lessonId
-    );
+  setIsCompleted(true);
+};
 
-  localStorage.setItem(
-    "completedLessons",
-    JSON.stringify(updatedLessons)
-  );
+ const handleIncomplete = async () => {
+  const email = localStorage.getItem("userEmail");
+
+  const response = await fetch("/api/lesson-progress", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      courseSlug,
+      lessonSlug,
+    }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    alert(data.error);
+    return;
+  }
 
   setIsCompleted(false);
 };

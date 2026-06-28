@@ -13,15 +13,30 @@ export default function EnrollmentGuard({
     useState(false);
 
   useEffect(() => {
-    const enrolledCourses = JSON.parse(
-      localStorage.getItem("enrolledCourses") ||
-        "[]"
+  async function checkEnrollment() {
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) return;
+
+    const response = await fetch(
+      `/api/enrollments?email=${encodeURIComponent(email)}`
     );
 
+    if (!response.ok) return;
+
+    const enrollments = await response.json();
+
     setIsEnrolled(
-      enrolledCourses.includes(courseSlug)
+      enrollments.some(
+        (enrollment: {
+          courseSlug: string;
+        }) => enrollment.courseSlug === courseSlug
+      )
     );
-  }, [courseSlug]);
+  }
+
+  checkEnrollment();
+}, [courseSlug]);
 
   if (!isEnrolled) {
     return (

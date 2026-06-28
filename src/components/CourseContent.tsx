@@ -24,14 +24,33 @@ export default function CourseContent({
   const [completedLessonIds, setCompletedLessonIds] =
     useState<string[]>([]);
 
-  useEffect(() => {
-    const storedLessons = JSON.parse(
-      localStorage.getItem("completedLessons") ||
-        "[]"
+useEffect(() => {
+  async function loadLessonProgress() {
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) return;
+
+    const response = await fetch(
+      `/api/lesson-progress?email=${encodeURIComponent(email)}`
     );
 
-    setCompletedLessonIds(storedLessons);
-  }, []);
+    if (!response.ok) return;
+
+    const progress = await response.json();
+
+    const completedIds = progress.map(
+      (lesson: {
+        courseSlug: string;
+        lessonSlug: string;
+      }) =>
+        `${lesson.courseSlug}/${lesson.lessonSlug}`
+    );
+
+    setCompletedLessonIds(completedIds);
+  }
+
+  loadLessonProgress();
+}, []);
 
 
 
