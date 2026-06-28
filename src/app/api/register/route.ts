@@ -35,7 +35,11 @@ export async function POST(
     },
   });
 
-  return NextResponse.json(
-    user
-  );
+ return NextResponse.json({
+  message: "Registration successful",
+  user: {
+    id: user.id,
+    email: user.email,
+  },
+});
 }
