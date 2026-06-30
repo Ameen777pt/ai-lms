@@ -20,14 +20,16 @@ const { userEmail } = useAuth();
   
   useEffect(() => {
   async function loadDashboardData() {
-    const email =
-      localStorage.getItem("userEmail");
+    const email = userEmail;
 
-    if (!email) return;
+if (!email) return;
 
     const enrollmentResponse = await fetch(
-      `/api/enrollments?email=${encodeURIComponent(email)}`
-    );
+  `/api/enrollments?email=${encodeURIComponent(email)}`,
+  {
+    cache: "no-store",
+  }
+);
 
     if (enrollmentResponse.ok) {
       const enrollments =
@@ -43,8 +45,11 @@ const { userEmail } = useAuth();
     }
 
     const lessonResponse = await fetch(
-      `/api/lesson-progress?email=${encodeURIComponent(email)}`
-    );
+  `/api/lesson-progress?email=${encodeURIComponent(email)}`,
+  {
+    cache: "no-store",
+  }
+);
 
     if (lessonResponse.ok) {
       const progress =
@@ -61,11 +66,24 @@ const { userEmail } = useAuth();
       );
     }
 
-    const storedRecent = JSON.parse(
-      localStorage.getItem("recentlyViewed") || "[]"
-    );
+   const recentlyViewedResponse = await fetch(
+  `/api/recently-viewed?email=${encodeURIComponent(email)}`,
+  {
+    cache: "no-store",
+  }
+);
 
-    setRecentlyViewed(storedRecent);
+if (recentlyViewedResponse.ok) {
+  const recentlyViewedData =
+    await recentlyViewedResponse.json();
+
+  setRecentlyViewed(
+    recentlyViewedData.map(
+      (course: { courseSlug: string }) =>
+        course.courseSlug
+    )
+  );
+}
 
     const storedNotifications = JSON.parse(
       localStorage.getItem("notifications") || "[]"
@@ -75,7 +93,7 @@ const { userEmail } = useAuth();
   }
 
   loadDashboardData();
-}, []);
+}, [userEmail]);
 const completedLessons =
   completedLessonIds.length;
 
