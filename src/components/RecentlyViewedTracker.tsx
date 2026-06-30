@@ -1,33 +1,42 @@
 "use client";
 
 import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RecentlyViewedTracker({
   courseSlug,
 }: {
   courseSlug: string;
 }) {
+  const { userEmail, isLoggedIn, loading } =
+    useAuth();
+
   useEffect(() => {
-    const viewedCourses =
-      JSON.parse(
-        localStorage.getItem(
-          "recentlyViewed"
-        ) || "[]"
-      );
+    if (
+      loading ||
+      !isLoggedIn ||
+      !userEmail
+    ) {
+      return;
+    }
 
-    const updatedCourses = [
-      courseSlug,
-      ...viewedCourses.filter(
-        (slug: string) =>
-          slug !== courseSlug
-      ),
-    ].slice(0, 5);
-
-    localStorage.setItem(
-      "recentlyViewed",
-      JSON.stringify(updatedCourses)
-    );
-  }, [courseSlug]);
+    fetch("/api/recently-viewed", {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        email: userEmail,
+        courseSlug,
+      }),
+    });
+  }, [
+    courseSlug,
+    userEmail,
+    isLoggedIn,
+    loading,
+  ]);
 
   return null;
 }

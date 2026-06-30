@@ -20,6 +20,7 @@ model User {
   enrollments Enrollment[]
   lessonProgress LessonProgress[]
   favorites Favorite[]
+  recentlyViewed RecentlyViewed[]
 }
 
 model Enrollment {
@@ -49,6 +50,17 @@ model Favorite {
   id         Int      @id @default(autoincrement())
   courseSlug String
   createdAt  DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseSlug])
+}
+
+model RecentlyViewed {
+  id         Int      @id @default(autoincrement())
+  courseSlug String
+  viewedAt   DateTime @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
