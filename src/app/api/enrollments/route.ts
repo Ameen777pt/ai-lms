@@ -74,6 +74,13 @@ const user = await getUserByEmail(email);
       },
     });
 
+    await prisma.notification.create({
+  data: {
+    userId: user.id,
+    message: `Enrolled in ${courseSlug}`,
+  },
+});
+
   return NextResponse.json(enrollment);
 }
 export async function DELETE(request: Request) {

@@ -21,6 +21,8 @@ model User {
   lessonProgress LessonProgress[]
   favorites Favorite[]
   recentlyViewed RecentlyViewed[]
+  notifications Notification[]
+  certificates Certificate[]
 }
 
 model Enrollment {
@@ -61,6 +63,26 @@ model RecentlyViewed {
   id         Int      @id @default(autoincrement())
   courseSlug String
   viewedAt   DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseSlug])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id         Int      @id @default(autoincrement())
+  courseSlug String
+  issuedAt   DateTime @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)

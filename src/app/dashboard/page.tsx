@@ -85,11 +85,24 @@ if (recentlyViewedResponse.ok) {
   );
 }
 
-    const storedNotifications = JSON.parse(
-      localStorage.getItem("notifications") || "[]"
-    );
+  const notificationsResponse = await fetch(
+  `/api/notifications?email=${encodeURIComponent(email)}`,
+  {
+    cache: "no-store",
+  }
+);
 
-    setNotifications(storedNotifications);
+if (notificationsResponse.ok) {
+  const notificationsData =
+    await notificationsResponse.json();
+
+  setNotifications(
+    notificationsData.map(
+      (notification: { message: string }) =>
+        notification.message
+    )
+  );
+}
   }
 
   loadDashboardData();

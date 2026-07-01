@@ -62,22 +62,6 @@ if (!response.ok) {
   return;
 }
 
-const notifications = JSON.parse(
-  localStorage.getItem("notifications") || "[]"
-);
-
-notifications.unshift(`Enrolled in ${courseSlug}`);
-
-if (!isEnrolled) {
-  notifications.unshift(
-    "🏅 Achievement Unlocked: First Enrollment"
-  );
-}
-
-localStorage.setItem(
-  "notifications",
-  JSON.stringify(notifications)
-);
 
 setIsEnrolled(true);
     }

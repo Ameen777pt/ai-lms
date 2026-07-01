@@ -85,6 +85,7 @@ const progress = Math.round(
     </p>
 
     <CertificateButton
+  courseSlug={courseSlug}
   courseTitle={courseTitle}
 />
   </>
