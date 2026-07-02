@@ -5,9 +5,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
+import DashboardStats from "@/components/dashboard/DashboardStats";
+import ContinueLearning from "@/components/dashboard/ContinueLearning";
+import MyCourses from "@/components/dashboard/MyCourses";
+import RecommendedCourses from "@/components/dashboard/RecommendedCourses";
+import NotificationList from "@/components/dashboard/NotificationList";
+import AchievementList from "@/components/dashboard/AchievementList";
+import RecentlyViewedList from "@/components/dashboard/RecentlyViewedList";
+import Loading from "@/components/ui/Loading";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+
 
 export default function DashboardPage() {
-const { userEmail } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+const {
+  userEmail,
+  loading: authLoading,
+} = useAuth();
  
   const [completedLessonIds, setCompletedLessonIds] =
   useState<string[]>([]);
@@ -17,91 +32,115 @@ const { userEmail } = useAuth();
   useState<string[]>([]);
   const [notifications, setNotifications] =
   useState<string[]>([]);
-  
   useEffect(() => {
   async function loadDashboardData() {
     const email = userEmail;
 
-if (!email) return;
-
-    const enrollmentResponse = await fetch(
-  `/api/enrollments?email=${encodeURIComponent(email)}`,
-  {
-    cache: "no-store",
-  }
-);
-
-    if (enrollmentResponse.ok) {
-      const enrollments =
-        await enrollmentResponse.json();
-
-      setEnrolledCourses(
-        enrollments.map(
-          (enrollment: {
-            courseSlug: string;
-          }) => enrollment.courseSlug
-        )
-      );
-    }
-
-    const lessonResponse = await fetch(
-  `/api/lesson-progress?email=${encodeURIComponent(email)}`,
-  {
-    cache: "no-store",
-  }
-);
-
-    if (lessonResponse.ok) {
-      const progress =
-        await lessonResponse.json();
-
-      setCompletedLessonIds(
-        progress.map(
-          (lesson: {
-            courseSlug: string;
-            lessonSlug: string;
-          }) =>
-            `${lesson.courseSlug}/${lesson.lessonSlug}`
-        )
-      );
-    }
-
-   const recentlyViewedResponse = await fetch(
-  `/api/recently-viewed?email=${encodeURIComponent(email)}`,
-  {
-    cache: "no-store",
-  }
-);
-
-if (recentlyViewedResponse.ok) {
-  const recentlyViewedData =
-    await recentlyViewedResponse.json();
-
-  setRecentlyViewed(
-    recentlyViewedData.map(
-      (course: { courseSlug: string }) =>
-        course.courseSlug
-    )
-  );
+    if (!email) {
+  return;
 }
 
-  const notificationsResponse = await fetch(
-  `/api/notifications?email=${encodeURIComponent(email)}`,
-  {
-    cache: "no-store",
-  }
-);
+    try {
+      const [
+        enrollmentResponse,
+        lessonResponse,
+        recentlyViewedResponse,
+        notificationsResponse,
+      ] = await Promise.all([
+        fetch(
+          `/api/enrollments?email=${encodeURIComponent(email)}`,
+          {
+            cache: "no-store",
+          }
+        ),
 
-if (notificationsResponse.ok) {
-  const notificationsData =
-    await notificationsResponse.json();
+        fetch(
+          `/api/lesson-progress?email=${encodeURIComponent(email)}`,
+          {
+            cache: "no-store",
+          }
+        ),
 
-  setNotifications(
-    notificationsData.map(
-      (notification: { message: string }) =>
-        notification.message
-    )
-  );
+        fetch(
+          `/api/recently-viewed?email=${encodeURIComponent(email)}`,
+          {
+            cache: "no-store",
+          }
+        ),
+
+        fetch(
+          `/api/notifications?email=${encodeURIComponent(email)}`,
+          {
+            cache: "no-store",
+          }
+        ),
+      ]);
+      if (
+  !enrollmentResponse.ok ||
+  !lessonResponse.ok ||
+  !recentlyViewedResponse.ok ||
+  !notificationsResponse.ok
+) {
+  throw new Error("Failed to load dashboard");
+}
+
+      if (enrollmentResponse.ok) {
+        const enrollments =
+          await enrollmentResponse.json();
+
+        setEnrolledCourses(
+          enrollments.map(
+            (enrollment: {
+              courseSlug: string;
+            }) => enrollment.courseSlug
+          )
+        );
+      }
+
+      if (lessonResponse.ok) {
+        const progress =
+          await lessonResponse.json();
+
+        setCompletedLessonIds(
+          progress.map(
+            (lesson: {
+              courseSlug: string;
+              lessonSlug: string;
+            }) =>
+              `${lesson.courseSlug}/${lesson.lessonSlug}`
+          )
+        );
+      }
+
+      if (recentlyViewedResponse.ok) {
+        const recentlyViewedData =
+          await recentlyViewedResponse.json();
+
+        setRecentlyViewed(
+          recentlyViewedData.map(
+            (course: { courseSlug: string }) =>
+              course.courseSlug
+          )
+        );
+      }
+
+      if (notificationsResponse.ok) {
+        const notificationsData =
+          await notificationsResponse.json();
+
+        setNotifications(
+          notificationsData.map(
+            (notification: { message: string }) =>
+              notification.message
+          )
+        );
+      }
+    }  catch {
+    setError(
+      "Failed to load dashboard. Please try again."
+    );
+} finally {
+    setLoading(false);
 }
   }
 
@@ -187,6 +226,20 @@ const recommendedCourses =
         )
     )
     .slice(0, 2);
+   if (authLoading || loading) {
+  return (
+    <ProtectedRoute>
+      <Loading message="Loading dashboard..." />
+    </ProtectedRoute>
+  );
+}
+if (error) {
+  return (
+    <ProtectedRoute>
+      <ErrorMessage message={error} />
+    </ProtectedRoute>
+  );
+}
 
   return (
     <ProtectedRoute>
@@ -203,241 +256,33 @@ const recommendedCourses =
 >
   View Profile
 </Link>
-<div className="grid grid-cols-2 gap-4 mt-6">
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">📚 Enrolled</p>
-    <p className="text-4xl font-bold mt-2">
-      {enrolledCourses.length}
-    </p>
-  </div>
-
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">✅ Completed</p>
-    <p className="text-4xl font-bold mt-2">
-      {completedCourses}
-    </p>
-  </div>
-
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">🎯 Lessons</p>
-    <p className="text-4xl font-bold mt-2">
-      {completedLessons}
-    </p>
-  </div>
-
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">🔥Active</p>
-    <p className="text-4xl font-bold mt-2">
-      {enrolledCourses.length -
-        completedCourses}
-    </p>
-  </div>
-
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">⏳ Pending</p>
-    <p className="text-4xl font-bold mt-2">
-      {pendingLessons}
-    </p>
-  </div>
-
-  <div className="border rounded-lg p-6 text-center">
-    <p className="text-gray-400 text-sm">📈 Progress</p>
-    <p className="text-4xl font-bold mt-2">
-      {progressPercentage}%
-    </p>
-  </div>
-</div>
-<div className="w-full bg-gray-300 rounded-full h-4 mt-3">
-  <div
-    className="bg-green-500 h-4 rounded-full"
-    style={{
-      width: `${progressPercentage}%`,
-    }}
-  ></div>
-</div>
-<h2 className="text-2xl font-bold mt-8">
-  Continue Learning
-</h2>
-{continueCourse && nextLesson && (
-  <Link
-    href={`/courses/${continueCourse.slug}/${nextLesson.slug}`}
-  >
-    <div className="border rounded-lg p-4 mt-4">
-    <h3 className="font-semibold">
-      {continueCourse.title}
-    </h3>
-
-    <p className="mt-2">
-  Next Lesson: {nextLesson?.title}
-</p>
-      </div>
-  </Link>
-)}
-<h2 className="text-2xl font-bold mt-8">
-  Your Courses
-</h2>
-{enrolledCourses.length === 0 && (
-  <div className="border rounded-lg p-6 mt-4">
-    <p className="font-semibold">
-      No enrolled courses yet.
-    </p>
-
-    <p className="mt-2">
-      Enroll in a course to begin learning.
-    </p>
-  </div>
-)}
-
-{courses
-  .filter((course) =>
-    enrolledCourses.includes(course.slug)
-  )
-  .map((course) => {
-  const completed = course.lessons.filter(
-  (lesson) =>
-    completedLessonIds.includes(
-      `${course.slug}/${lesson.slug}`
-    )
-).length;
-
-const total = course.lessons.length;
-
-const progress = Math.round(
-  (completed / total) * 100
-);
-  
-
-  return (
-  <Link
-  href={`/courses/${course.slug}`}
-  key={course.slug}
->
-  <div className="border rounded-lg p-4 mb-4">
-    <h3 className="font-semibold text-lg">
-      {course.title}
-    </h3>
-
-    <p className="mt-2">
-      Progress: {progress}%
-    </p>
-    <div className="w-full bg-gray-400 h-4 rounded-full mt-2 overflow-hidden">
-  <div
-    className="bg-blue-500 h-full"
-    style={{
-      width: `${progress}%`,
-    }}
-  />
-</div>
-    <p>
-  Completed Lessons: {completed}/{total}
-</p>
-
-    </div>
-</Link>
-);
-})}
-<h2 className="text-2xl font-bold mt-8">
-  Recommended For You
-</h2>
-
-{recommendedCourses.length === 0 && (
-  <p className="mt-2">
-    You've enrolled in all courses.
-  </p>
-)}
-
-{recommendedCourses.map((course) => (
-  <Link
-    key={course.slug}
-    href={`/courses/${course.slug}`}
-  >
-    <div className="border rounded-lg p-4 mt-4">
-      <h3 className="font-semibold">
-        {course.title}
-      </h3>
-
-      <p className="mt-2">
-        Instructor: {course.instructor}
-      </p>
-    </div>
-  </Link>
-))}
-<h2 className="text-2xl font-bold mt-8">
-  Notifications
-</h2>
-
-{notifications.length === 0 && (
-  <p className="mt-2">
-    No notifications yet.
-  </p>
-)}
-
-{[...new Set(notifications)].map(
-  (notification, index) => (
-    <div
-  key={index}
-  className="bg-amber-100 text-black border border-amber-300 rounded-lg p-4 mt-4"
->
-      🔔 {notification}
-    </div>
-  )
-)}
-<h2 className="text-2xl font-bold mt-8">
-  Achievements
-</h2>
-
-{achievements.length === 0 && (
-  <p className="mt-2">
-    No achievements unlocked yet.
-  </p>
-)}
-
-<div className="grid md:grid-cols-2 gap-4 mt-4">
-  {achievements.map(
-    (achievement) => (
-      <div
-        key={achievement}
-        className="border rounded-lg p-4"
-      >
-        {achievement}
-      </div>
-    )
-  )}
-</div>
-<h2 className="text-2xl font-bold mt-8">
-  Recently Viewed
-</h2>
-
-{recentlyViewed.length === 0 && (
-  <p className="mt-2">
-    No recently viewed courses.
-  </p>
-)}
-
-{recentlyViewed.map((slug) => {
-  const course = courses.find(
-    (course) => course.slug === slug
-  );
-
-  if (!course) return null;
-
-  return (
-    <Link
-  href={`/courses/${course.slug}`}
-  key={slug}
->
-  <div className="border rounded-lg p-4 mt-4">
-    <h3 className="font-semibold">
-      {course.title}
-    </h3>
-
-    <p className="mt-2">
-      Instructor: {course.instructor}
-    </p>
-  </div>
-</Link>
-  );
-})}
+<DashboardStats
+  enrolledCourses={enrolledCourses.length}
+  completedCourses={completedCourses}
+  completedLessons={completedLessons}
+  pendingLessons={pendingLessons}
+  progressPercentage={progressPercentage}
+/>
+<ContinueLearning
+  continueCourse={continueCourse}
+  nextLesson={nextLesson}
+/>
+<MyCourses
+  enrolledCourses={enrolledCourses}
+  completedLessonIds={completedLessonIds}
+/>
+<RecommendedCourses
+  enrolledCourses={enrolledCourses}
+/>
+<NotificationList
+  notifications={notifications}
+/>
+<AchievementList
+  achievements={achievements}
+/>
+<RecentlyViewedList
+  recentlyViewed={recentlyViewed}
+/>
       
     </div>
     </ProtectedRoute>
